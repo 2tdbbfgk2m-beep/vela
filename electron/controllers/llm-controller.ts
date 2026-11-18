@@ -1,22 +1,18 @@
 import { ipcMain, BrowserWindow } from 'electron'
-import { readJsonFile, writeJsonFile, MODELS_CONFIG_PATH, GLOBAL_CONFIG_PATH, DEFAULT_GLOBAL_CONFIG } from '../utils/config-utils'
-import { ModelProfile, GlobalConfig } from '../../src/shared/ipc-channels'
+import { readJsonFile, writeJsonFile, GLOBAL_CONFIG_PATH, DEFAULT_GLOBAL_CONFIG } from '../utils/config-utils'
+import { ModelProfile, GlobalConfig, ProviderConfig } from '../../src/shared/ipc-channels'
 import { LLMFactory } from '../llm/llm-factory'
-import { listOllamaModels } from '../llm/ollama-models'
+import { listRemoteModels } from '../llm/list-models'
+import { loadProviders, saveProviders, expandProfiles } from '../llm/provider-store'
 
 const activeStreams = new Map<string, AbortController>()
 
 function loadModelConfigs(): ModelProfile[] {
-  return readJsonFile<ModelProfile[]>(MODELS_CONFIG_PATH, [])
-}
-
-function saveModelConfigs(models: ModelProfile[]) {
-  writeJsonFile(MODELS_CONFIG_PATH, models)
+  return expandProfiles(loadProviders())
 }
 
 function getModelConfig(modelId: string): ModelProfile | null {
-  const models = loadModelConfigs()
-  return models.find((m) => m.id === modelId) ?? null
+  return loadModelConfigs().find((m) => m.id === modelId) ?? null
 }
 
 function applyProxyConfig() {
@@ -41,14 +37,35 @@ function applyProxyConfig() {
 
 export function registerLLMController() {
   ipcMain.handle('llm:ollama-models', async (_event, baseUrl: string, apiKey?: string) => {
+    return fetchModels({ provider: 'ollama', protocol: 'openai', baseUrl, apiKey: apiKey ?? '' })
+  })
+
+  ipcMain.handle('llm:list-providers', async () => loadProviders())
+
+  ipcMain.handle('llm:save-provider', async (_event, provider: ProviderConfig) => {
     try {
-      return { success: true, models: await listOllamaModels(baseUrl, apiKey) }
+      const providers = loadProviders()
+      const idx = providers.findIndex((p) => p.id === provider.id)
+      if (idx >= 0) providers[idx] = provider
+      else providers.push(provider)
+      saveProviders(providers)
+      return { success: true }
     } catch (error) {
-      const message = error instanceof Error ? error.message : ''
-      const code = /^(INVALID_URL|INVALID_RESPONSE|HTTP_\d+)$/.test(message) ? message :
-        error instanceof Error && error.name === 'TimeoutError' ? 'TIMEOUT' : 'CONNECTION_FAILED'
-      return { success: false, models: [], error: code }
+      return { success: false, error: String(error) }
     }
+  })
+
+  ipcMain.handle('llm:delete-provider', async (_event, providerId: string) => {
+    try {
+      saveProviders(loadProviders().filter((p) => p.id !== providerId))
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: String(error) }
+    }
+  })
+
+  ipcMain.handle('llm:fetch-models', async (_event, source: Pick<ProviderConfig, 'provider' | 'protocol' | 'baseUrl' | 'apiKey'>) => {
+    return fetchModels(source)
   })
   ipcMain.handle('llm:generate', async (_event, request: { modelId: string; messages: Array<{ role: string; content: string }>; temperature?: number; maxTokens?: number; responseFormat?: { type: string }; thinking?: boolean }) => {
     try {
@@ -112,28 +129,7 @@ export function registerLLMController() {
 
   ipcMain.handle('llm:list-models', async () => loadModelConfigs())
 
-  ipcMain.handle('llm:save-model', async (_event, model: ModelProfile) => {
-    try {
-      const models = loadModelConfigs()
-      const idx = models.findIndex((m) => m.id === model.id)
-      if (idx >= 0) models[idx] = model
-      else models.push(model)
-      saveModelConfigs(models)
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: String(error) }
-    }
-  })
 
-  ipcMain.handle('llm:delete-model', async (_event, modelId: string) => {
-    try {
-      const models = loadModelConfigs().filter((m) => m.id !== modelId)
-      saveModelConfigs(models)
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: String(error) }
-    }
-  })
 
   ipcMain.handle('llm:set-default-model', async (_event, modelId: string | null) => {
     try {
@@ -191,4 +187,16 @@ export function registerLLMController() {
       return { success: false, error: String(error) }
     }
   })
+}
+
+/** 拉取模型列表，错误归一化为前端可翻译的错误码 */
+async function fetchModels(source: Pick<ProviderConfig, 'provider' | 'protocol' | 'baseUrl' | 'apiKey'>) {
+  try {
+    return { success: true, models: await listRemoteModels(source) }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : ''
+    const code = /^(INVALID_URL|INVALID_RESPONSE|HTTP_\d+)$/.test(message) ? message :
+      error instanceof Error && error.name === 'TimeoutError' ? 'TIMEOUT' : 'CONNECTION_FAILED'
+    return { success: false, models: [], error: code }
+  }
 }

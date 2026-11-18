@@ -106,7 +106,10 @@ Object.assign(window, { rehearsalTest: qa, velaAPI: {
   send: () => {}, once: () => {}, getZoomLevel: () => 0, setZoomLevel: () => {}, setZoomFactor: () => {},
 } })
 useProjectStore.setState({ currentProject: project('A'), loading: false })
-useLLMStore.setState({ loaded: true, defaultModelId: 'fixture', models: [{
+useLLMStore.setState({ loaded: true, defaultModelId: 'fixture', providers: [{
+  id: 'fixture-provider', name: '测试服务商', provider: 'custom', protocol: 'openai', baseUrl: '', apiKey: '',
+  models: [{ id: 'fixture', modelName: 'fixture', displayName: '模拟模型 · 仅供界面测试', temperature: 0.8, maxTokens: 6000, purposes: ['generation'] }],
+}], models: [{
   id: 'fixture', name: '模拟模型 · 仅供界面测试', provider: 'custom', protocol: 'openai', modelName: 'fixture',
   apiKey: '', baseUrl: '', temperature: 0.8, maxTokens: 6000, purposes: ['generation'],
 }] })

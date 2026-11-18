@@ -36,6 +36,7 @@ export function writeJsonFile(filePath: string, data: unknown) {
 
 export const GLOBAL_CONFIG_PATH = path.join(VELA_HOME, 'config.json')
 export const MODELS_CONFIG_PATH = path.join(VELA_HOME, 'models.json')
+export const PROVIDERS_CONFIG_PATH = path.join(VELA_HOME, 'providers.json')
 export const RECENT_PROJECTS_PATH = path.join(VELA_HOME, 'recent-projects.json')
 
 export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {

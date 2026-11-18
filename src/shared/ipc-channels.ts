@@ -121,15 +121,23 @@ export interface LLMChannels {
     args: []
     return: ModelProfile[]
   }
+  'llm:list-providers': {
+    args: []
+    return: ProviderConfig[]
+  }
+  'llm:save-provider': {
+    args: [provider: ProviderConfig]
+    return: { success: boolean; error?: string }
+  }
+  'llm:delete-provider': {
+    args: [providerId: string]
+    return: { success: boolean; error?: string }
+  }
+  'llm:fetch-models': {
+    args: [source: Pick<ProviderConfig, 'provider' | 'protocol' | 'baseUrl' | 'apiKey'>]
+    return: { success: boolean; models: string[]; error?: string }
+  }
   'llm:ollama-models': { args: [baseUrl: string, apiKey?: string]; return: { success: boolean; models: string[]; error?: string } }
-  'llm:save-model': {
-    args: [model: ModelProfile]
-    return: { success: boolean }
-  }
-  'llm:delete-model': {
-    args: [modelId: string]
-    return: { success: boolean }
-  }
   'llm:set-default-model': {
     args: [modelId: string | null]
     return: { success: boolean; error?: string }
@@ -227,6 +235,28 @@ export interface ModelProfile {
   temperature: number
   maxTokens: number
   purposes: Array<'generation' | 'refinement' | 'summary' | 'embedding'>
+}
+
+/** 服务商下的单个模型条目（运行时会展开为 ModelProfile） */
+export interface ProviderModelEntry {
+  /** 模型条目 ID，同时作为展开后 ModelProfile 的 ID（默认模型引用它） */
+  id: string
+  modelName: string
+  displayName: string
+  temperature: number
+  maxTokens: number
+  purposes: ModelProfile['purposes']
+}
+
+/** 服务商配置：一份地址和 Key，下挂多个模型 */
+export interface ProviderConfig {
+  id: string
+  name: string
+  provider: ModelProfile['provider']
+  protocol: ModelProfile['protocol']
+  baseUrl: string
+  apiKey: string
+  models: ProviderModelEntry[]
 }
 
 // ===== 引入 DB 类型 =====

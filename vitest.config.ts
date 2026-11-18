@@ -16,7 +16,7 @@ export default defineConfig({
       'src/i18n/__tests__/i18n.test.ts',
       'src/services/agent/__tests__/context-builder.test.ts',
       'src/services/__tests__/*.test.ts',
-      'electron/__tests__/{ollama-models,rehearsal-*,story-revision}.test.ts',
+      'electron/__tests__/{ollama-models,provider-store,rehearsal-*,story-revision}.test.ts',
     ],
     globals: false,
   },

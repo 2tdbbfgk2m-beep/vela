@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { ipc } from '../services/ipc-client'
-import type { ModelProfile, LLMResponse, TokenUsage } from '../shared/ipc-channels'
+import type { ModelProfile, ProviderConfig, LLMResponse, TokenUsage } from '../shared/ipc-channels'
 import i18n from '../i18n'
 
 /** 流式生成的回调 */
@@ -11,7 +11,9 @@ interface StreamCallbacks {
 }
 
 interface LLMState {
-  /** 已配置的模型列表 */
+  /** 已配置的服务商（一份 Key 下挂多个模型） */
+  providers: ProviderConfig[]
+  /** 由服务商展开的扁平模型列表，供生成和选择器使用 */
   models: ModelProfile[]
   /** 当前默认生成模型 ID */
   defaultModelId: string | null
@@ -25,12 +27,12 @@ interface LLMState {
   // ===== Actions =====
   /** 初始化（加载模型列表 + 默认模型 ID） */
   init: () => Promise<void>
-  /** 加载模型列表 */
+  /** 加载服务商与展开后的模型列表 */
   loadModels: () => Promise<void>
-  /** 保存模型 */
-  saveModel: (model: ModelProfile) => Promise<boolean>
-  /** 删除模型 */
-  deleteModel: (modelId: string) => Promise<boolean>
+  /** 保存服务商配置 */
+  saveProvider: (provider: ProviderConfig) => Promise<boolean>
+  /** 删除服务商及其全部模型 */
+  deleteProvider: (providerId: string) => Promise<boolean>
   /** 设置默认生成模型（持久化到 ~/.vela/config.json） */
   setDefaultModel: (modelId: string) => void
   /** 设置默认向量模型（持久化到 ~/.vela/config.json） */
@@ -55,6 +57,7 @@ interface LLMState {
 }
 
 export const useLLMStore = create<LLMState>()((set, get) => ({
+  providers: [],
   models: [],
   defaultModelId: null,
   defaultEmbeddingModelId: null,
@@ -78,29 +81,31 @@ export const useLLMStore = create<LLMState>()((set, get) => ({
 
   loadModels: async () => {
     if (!ipc.isElectron) return
-    const models = await ipc.invoke('llm:list-models')
-    set({ models, loaded: true })
+    const [providers, models] = await Promise.all([
+      ipc.invoke('llm:list-providers'),
+      ipc.invoke('llm:list-models'),
+    ])
+    set({ providers, models, loaded: true })
   },
 
-  saveModel: async (model) => {
-    const result = await ipc.invoke('llm:save-model', model)
-    if (result.success) {
-      await get().loadModels()
-    }
+  saveProvider: async (provider) => {
+    const result = await ipc.invoke('llm:save-provider', provider)
+    if (result.success) await get().loadModels()
     return result.success
   },
 
-  deleteModel: async (modelId) => {
-    const result = await ipc.invoke('llm:delete-model', modelId)
+  deleteProvider: async (providerId) => {
+    const removed = get().providers.find((p) => p.id === providerId)
+    const result = await ipc.invoke('llm:delete-provider', providerId)
     if (result.success) {
       await get().loadModels()
-      // 如果删除的是默认生成模型，清空默认
-      if (get().defaultModelId === modelId) {
+      // 默认模型属于被删服务商时清空默认
+      const removedIds = new Set(removed?.models.map((m) => m.id) ?? [])
+      if (get().defaultModelId && removedIds.has(get().defaultModelId!)) {
         set({ defaultModelId: null })
         ipc.invoke('llm:set-default-model', null)
       }
-      // 如果删除的是默认向量模型，清空默认
-      if (get().defaultEmbeddingModelId === modelId) {
+      if (get().defaultEmbeddingModelId && removedIds.has(get().defaultEmbeddingModelId!)) {
         set({ defaultEmbeddingModelId: null })
         ipc.invoke('llm:set-default-embedding-model', null)
       }

@@ -43,8 +43,8 @@
     "title": "Configuração de modelos",
     "configuredCount": "{{count}} {{label}} configurados",
     "addModel": "Adicionar {{label}}",
-    "addFirstModel": "Adicionar o primeiro {{label}}",
-    "noModels": "Nenhum {{label}} configurado",
+    "addFirstModel": "Adicionar o primeiro modelo",
+    "noModels": "Nenhum modelo configurado",
     "provider": "Provedor",
     "modelId": "ID do modelo",
     "modelName": "Nome do modelo",
@@ -65,8 +65,6 @@
     "editModel": "Editar",
     "removeModel": "Excluir",
     "confirmRemove": "Remover esta configuração de modelo?",
-    "noModels": "Nenhum modelo configurado",
-    "addFirstModel": "Adicionar o primeiro modelo",
     "newModelConfig": "Nova configuração de modelo",
     "editModelName": "Editar: {{name}}",
     "protocol": "Protocolo",
@@ -136,25 +134,82 @@
     "businessDescription": "Se você tem interesse em implantação comercial (licenciamento SaaS), detalhes de implementação técnica ou direcionamento de produtos de IA, entre em contato:"
   },
   "promptTemplates": {
-    "generate_global_config": { "name": "Geração de configuração global", "description": "Gerar uma configuração completa de romance em JSON a partir de uma ideia de uma linha do usuário" },
-    "premise": { "name": "Premissa da história", "description": "Etapa 1 da arquitetura: destilar a premissa da história, condensando os principais atrativos e a cadeia de conflitos" },
-    "character_dynamics": { "name": "Mapa de personagens", "description": "Etapa 2 da arquitetura: construir a teia de relacionamentos dos personagens centrais e seus arcos" },
-    "world_building": { "name": "Construção de mundo", "description": "Etapa 3 da arquitetura: construir uma matriz de ambientação com motores de conflito integrados" },
-    "synopsis": { "name": "Sinopse", "description": "Etapa 4 da arquitetura: integrar todos os fragmentos e gerar um esboço de trama com base na estrutura escolhida" },
-    "directory_full": { "name": "Plano de capítulos (completo)", "description": "Gerar planos detalhados para todos os capítulos de uma vez com base na arquitetura completa" },
-    "directory_incremental": { "name": "Plano de capítulos (incremental)", "description": "Continuar gerando planos de capítulos a partir dos existentes, com suporte a geração em blocos" },
-    "first_chapter_draft": { "name": "Rascunho do primeiro capítulo", "description": "Gerar o texto completo do primeiro capítulo do romance" },
-    "next_chapter_draft": { "name": "Rascunho dos capítulos seguintes", "description": "Gerar os capítulos seguintes com base no contexto e nos planos de capítulos" },
-    "refine_chapter": { "name": "Revisão de nível mestre", "description": "Elevar o rascunho a uma qualidade de nível mestre" },
-    "consistency_check": { "name": "Revisão de consistência", "description": "Verificar problemas de consistência no capítulo" },
-    "analyze_writing_style": { "name": "Análise de estilo de escrita", "description": "Extrair as características de estilo de escrita do autor a partir de amostras de prosa" },
-    "refine_from_review": { "name": "Revisão orientada por relatório", "description": "Corrigir com precisão os problemas do rascunho com base no relatório de revisão" },
-    "chapter_key_points": { "name": "Pontos-chave do capítulo", "description": "Gerar pontos-chave estruturados após a finalização (nós de trama, dinâmica de personagens, novas configurações, pistas e ganchos)" },
-    "update_character_state": { "name": "Atualizar estado dos personagens", "description": "Analisar o conteúdo do capítulo após a finalização e retornar em JSON os campos currentState alterados dos personagens para atualização automática das fichas" },
-    "reverse_config": { "name": "Engenharia reversa da configuração", "description": "Fazer engenharia reversa da configuração do romance, da arquitetura em quatro partes e da ficha do protagonista a partir do conteúdo existente, para cenários de continuação" },
-    "extract_characters": { "name": "Extrair fichas de personagens", "description": "Extrair dados estruturados de fichas de personagens a partir do texto do mapa de personagens para criar automaticamente arquivos JSON de fichas após a geração da arquitetura" },
-    "reverse_blueprint": { "name": "Engenharia reversa do plano", "description": "Fazer engenharia reversa de um plano de capítulos estruturado a partir da prosa de capítulos existentes para cenários de importação" },
-    "vector_enhanced": { "name": "Inferência aprimorada por vetores", "description": "Usar trechos recuperados por vetores para aumentar a precisão da inferência da configuração global" }
+    "generate_global_config": {
+      "name": "Geração de configuração global",
+      "description": "Gerar uma configuração completa de romance em JSON a partir de uma ideia de uma linha do usuário"
+    },
+    "premise": {
+      "name": "Premissa da história",
+      "description": "Etapa 1 da arquitetura: destilar a premissa da história, condensando os principais atrativos e a cadeia de conflitos"
+    },
+    "character_dynamics": {
+      "name": "Mapa de personagens",
+      "description": "Etapa 2 da arquitetura: construir a teia de relacionamentos dos personagens centrais e seus arcos"
+    },
+    "world_building": {
+      "name": "Construção de mundo",
+      "description": "Etapa 3 da arquitetura: construir uma matriz de ambientação com motores de conflito integrados"
+    },
+    "synopsis": {
+      "name": "Sinopse",
+      "description": "Etapa 4 da arquitetura: integrar todos os fragmentos e gerar um esboço de trama com base na estrutura escolhida"
+    },
+    "directory_full": {
+      "name": "Plano de capítulos (completo)",
+      "description": "Gerar planos detalhados para todos os capítulos de uma vez com base na arquitetura completa"
+    },
+    "directory_incremental": {
+      "name": "Plano de capítulos (incremental)",
+      "description": "Continuar gerando planos de capítulos a partir dos existentes, com suporte a geração em blocos"
+    },
+    "first_chapter_draft": {
+      "name": "Rascunho do primeiro capítulo",
+      "description": "Gerar o texto completo do primeiro capítulo do romance"
+    },
+    "next_chapter_draft": {
+      "name": "Rascunho dos capítulos seguintes",
+      "description": "Gerar os capítulos seguintes com base no contexto e nos planos de capítulos"
+    },
+    "refine_chapter": {
+      "name": "Revisão de nível mestre",
+      "description": "Elevar o rascunho a uma qualidade de nível mestre"
+    },
+    "consistency_check": {
+      "name": "Revisão de consistência",
+      "description": "Verificar problemas de consistência no capítulo"
+    },
+    "analyze_writing_style": {
+      "name": "Análise de estilo de escrita",
+      "description": "Extrair as características de estilo de escrita do autor a partir de amostras de prosa"
+    },
+    "refine_from_review": {
+      "name": "Revisão orientada por relatório",
+      "description": "Corrigir com precisão os problemas do rascunho com base no relatório de revisão"
+    },
+    "chapter_key_points": {
+      "name": "Pontos-chave do capítulo",
+      "description": "Gerar pontos-chave estruturados após a finalização (nós de trama, dinâmica de personagens, novas configurações, pistas e ganchos)"
+    },
+    "update_character_state": {
+      "name": "Atualizar estado dos personagens",
+      "description": "Analisar o conteúdo do capítulo após a finalização e retornar em JSON os campos currentState alterados dos personagens para atualização automática das fichas"
+    },
+    "reverse_config": {
+      "name": "Engenharia reversa da configuração",
+      "description": "Fazer engenharia reversa da configuração do romance, da arquitetura em quatro partes e da ficha do protagonista a partir do conteúdo existente, para cenários de continuação"
+    },
+    "extract_characters": {
+      "name": "Extrair fichas de personagens",
+      "description": "Extrair dados estruturados de fichas de personagens a partir do texto do mapa de personagens para criar automaticamente arquivos JSON de fichas após a geração da arquitetura"
+    },
+    "reverse_blueprint": {
+      "name": "Engenharia reversa do plano",
+      "description": "Fazer engenharia reversa de um plano de capítulos estruturado a partir da prosa de capítulos existentes para cenários de importação"
+    },
+    "vector_enhanced": {
+      "name": "Inferência aprimorada por vetores",
+      "description": "Usar trechos recuperados por vetores para aumentar a precisão da inferência da configuração global"
+    }
   },
   "promptVariables": {
     "user_idea": "Ideia criativa do usuário",
@@ -211,23 +266,73 @@
     "total_chapters": "Total de capítulos existentes"
   },
   "stylePresets": {
-    "male-hot-blood": { "name": "Sangue quente masculino", "description": "Evolução rápida, reviravoltas humilhantes, ascensão do azarão" },
-    "female-romance": { "name": "Romance feminino", "description": "Romance doce, devoção mútua, profundidade emocional" },
-    "ancient-xianxia": { "name": "Xianxia antigo", "description": "Cultivo imortal, charme clássico, laços entre mortais e imortais" },
-    "modern-urban": { "name": "Urbano moderno", "description": "Batalhas corporativas, vida urbana, textura realista" },
-    "hard-scifi": { "name": "Ficção científica hard", "description": "Exploração interestelar, tecnologia de ponta, civilizações futuras" },
-    "suspense-mystery": { "name": "Suspense e mistério", "description": "Reviravoltas em camadas, lógica rigorosa, inteligência afiada" }
+    "male-hot-blood": {
+      "name": "Sangue quente masculino",
+      "description": "Evolução rápida, reviravoltas humilhantes, ascensão do azarão"
+    },
+    "female-romance": {
+      "name": "Romance feminino",
+      "description": "Romance doce, devoção mútua, profundidade emocional"
+    },
+    "ancient-xianxia": {
+      "name": "Xianxia antigo",
+      "description": "Cultivo imortal, charme clássico, laços entre mortais e imortais"
+    },
+    "modern-urban": {
+      "name": "Urbano moderno",
+      "description": "Batalhas corporativas, vida urbana, textura realista"
+    },
+    "hard-scifi": {
+      "name": "Ficção científica hard",
+      "description": "Exploração interestelar, tecnologia de ponta, civilizações futuras"
+    },
+    "suspense-mystery": {
+      "name": "Suspense e mistério",
+      "description": "Reviravoltas em camadas, lógica rigorosa, inteligência afiada"
+    }
   },
   "fonts": {
-    "inter": { "label": "Inter", "desc": "Fonte de interface moderna cuidadosamente projetada, excelente para composição em inglês, ideal para interfaces" },
-    "noto-sans-sc": { "label": "Noto Sans SC", "desc": "Estilo sem serifa, atende chinês e inglês, limpo e moderno, adequado para temas de ficção científica e urbanos" },
-    "lxgw-wenkai": { "label": "LXGW WenKai", "desc": "Estilo caligráfico, acolhedor e elegante, ideal para escrever romances em chinês" },
-    "noto-serif-sc": { "label": "Noto Serif SC", "desc": "Estilo serifado, traços eretos, forte sensação de impressão, ideal para documentos formais" },
-    "system": { "label": "Padrão do sistema", "desc": "Usa PingFang/SF Pro no macOS, sensação nativa, sem necessidade de arquivos de fonte" }
+    "inter": {
+      "label": "Inter",
+      "desc": "Fonte de interface moderna cuidadosamente projetada, excelente para composição em inglês, ideal para interfaces"
+    },
+    "noto-sans-sc": {
+      "label": "Noto Sans SC",
+      "desc": "Estilo sem serifa, atende chinês e inglês, limpo e moderno, adequado para temas de ficção científica e urbanos"
+    },
+    "lxgw-wenkai": {
+      "label": "LXGW WenKai",
+      "desc": "Estilo caligráfico, acolhedor e elegante, ideal para escrever romances em chinês"
+    },
+    "noto-serif-sc": {
+      "label": "Noto Serif SC",
+      "desc": "Estilo serifado, traços eretos, forte sensação de impressão, ideal para documentos formais"
+    },
+    "system": {
+      "label": "Padrão do sistema",
+      "desc": "Usa PingFang/SF Pro no macOS, sensação nativa, sem necessidade de arquivos de fonte"
+    }
   },
   "modelsProviders": {
     "ollama": "Ollama (local)",
     "bigmodel": "BigModel (Zhipu)",
     "custom": "Personalizado"
+  },
+  "providers": {
+    "add": "Adicionar provedor",
+    "empty": "Nenhum provedor ainda",
+    "modelCount": "{{count}} modelos",
+    "pickOrCreate": "Escolha um provedor ou crie um",
+    "name": "Nome do provedor",
+    "toggleKey": "Mostrar ou ocultar a chave de API",
+    "fetch": "Buscar modelos",
+    "fetching": "Buscando...",
+    "fetchFailed": "Falha ao buscar ({{error}})",
+    "fetchEmpty": "O provedor não retornou modelos",
+    "filter": "Pesquisar modelos",
+    "addSelected": "Adicionar {{count}} selecionados",
+    "manual": "Digitar o nome do modelo",
+    "added": "{{count}} modelos adicionados",
+    "remove": "Remover provedor"
   }
 }
